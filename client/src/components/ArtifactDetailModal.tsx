@@ -10,9 +10,10 @@ import type { Artifact } from '../../../server/src/schema';
 interface ArtifactDetailModalProps {
   artifact: Artifact;
   onClose: () => void;
+  onBackToGallery?: () => void;
 }
 
-export function ArtifactDetailModal({ artifact, onClose }: ArtifactDetailModalProps) {
+export function ArtifactDetailModal({ artifact, onClose, onBackToGallery }: ArtifactDetailModalProps) {
   const [isARMode, setIsARMode] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -41,6 +42,10 @@ export function ArtifactDetailModal({ artifact, onClose }: ArtifactDetailModalPr
       // In a real app, this would trigger AR functionality
       if (!isARMode) {
         console.log('Starting AR mode for artifact:', artifact.id);
+        // Simulate AR initialization delay
+        setTimeout(() => {
+          console.log('AR mode initialized');
+        }, 1000);
       } else {
         console.log('Stopping AR mode');
       }
@@ -90,11 +95,25 @@ export function ArtifactDetailModal({ artifact, onClose }: ArtifactDetailModalPr
               )}
               
               {isARMode && (
-                <div className="absolute inset-0 bg-purple-600/20 border-2 border-purple-400 animate-pulse flex items-center justify-center">
-                  <div className="text-white text-center">
-                    <div className="text-2xl mb-2">📱</div>
-                    <div>AR Mode Active</div>
-                    <div className="text-sm opacity-75">Point your device at a surface</div>
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 to-indigo-600/30 border-2 border-purple-400 animate-pulse flex items-center justify-center">
+                  <div className="text-white text-center relative">
+                    <div className="absolute inset-0 bg-purple-600/10 rounded-lg animate-ping"></div>
+                    <div className="relative z-10">
+                      <div className="text-3xl mb-3">📱</div>
+                      <div className="text-lg font-semibold mb-2">AR Mode Active</div>
+                      <div className="text-sm opacity-75 mb-2">Point your device at a surface</div>
+                      <div className="text-xs bg-purple-600/50 px-3 py-1 rounded-full">
+                        🔍 Scanning environment...
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* AR scanning lines */}
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-pulse"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-pulse"></div>
+                    <div className="absolute top-0 left-0 w-0.5 h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent animate-pulse"></div>
+                    <div className="absolute top-0 right-0 w-0.5 h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent animate-pulse"></div>
                   </div>
                 </div>
               )}
@@ -172,9 +191,21 @@ export function ArtifactDetailModal({ artifact, onClose }: ArtifactDetailModalPr
               <Button
                 onClick={handleARToggle}
                 variant={isARMode ? "default" : "outline"}
-                className={isARMode ? "bg-purple-600 hover:bg-purple-700" : "border-purple-400 text-purple-300"}
+                className={isARMode ? "bg-purple-600 hover:bg-purple-700 animate-pulse" : "border-purple-400 text-purple-300 hover:bg-purple-600/20"}
               >
-                📱 {isARMode ? 'Stop AR' : 'Start AR'}
+                📱 {isARMode ? 'Stop AR Mode' : 'Start AR Mode'}
+              </Button>
+            )}
+            
+            {onBackToGallery && (
+              <Button
+                onClick={() => {
+                  onBackToGallery();
+                  onClose();
+                }}
+                className="bg-indigo-600 hover:bg-indigo-700"
+              >
+                🏛️ Back to Gallery
               </Button>
             )}
             

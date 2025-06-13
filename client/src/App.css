@@ -113,3 +113,92 @@
 .portfolio-grid-item:hover {
   transform: scale(1.02);
 }
+
+/* Enhanced AR Mode animations */
+@keyframes ar-pulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+}
+
+.ar-mode-overlay {
+  animation: ar-pulse 2s ease-in-out infinite;
+}
+
+/* Gallery 3D enhancements */
+.gallery-artifact-glow {
+  filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.5));
+}
+
+.gallery-artifact-hover {
+  transition: all 0.3s ease;
+}
+
+.gallery-artifact-hover:hover {
+  transform: scale(1.05);
+  filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.8));
+}
+
+/* ASMR Mode visual feedback */
+.asmr-active {
+  background: linear-gradient(45deg, rgba(76, 205, 196, 0.1), rgba(185, 236, 188, 0.1));
+  border-left: 3px solid #4ecdc4;
+}
+
+/* Smooth button transitions */
+.btn-smooth {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-smooth:hover {
+  transform: translateY(-1px);
+}
+
+/* Loading states */
+.loading-overlay {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* Toast notification positioning */
+.sonner-toast {
+  backdrop-filter: blur(10px);
+}
+
+/* Enhanced 3D grid lines */
+.grid-major {
+  stroke: rgba(255, 255, 255, 0.3);
+  stroke-width: 2;
+}
+
+.grid-minor {
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 1;
+}
+
+/* Camera animation indicator */
+.camera-animating {
+  border-left: 3px solid #ff6b6b;
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Artifact detail modal enhancements */
+.artifact-preview-container {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.artifact-preview-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.artifact-preview-container:hover::before {
+  left: 100%;
+}

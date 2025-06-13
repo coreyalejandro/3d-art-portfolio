@@ -3,7 +3,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Toaster } from '@/components/ui/sonner';
 import { trpc } from '@/utils/trpc';
+import { toast } from 'sonner';
 import { Gallery3D } from '@/components/Gallery3D';
 import { PortfolioManager } from '@/components/PortfolioManager';
 import { CollaborationPanel } from '@/components/CollaborationPanel';
@@ -19,22 +21,35 @@ function App() {
   const [selectedArtifact, setSelectedArtifact] = useState<Artifact | null>(null);
   const [currentSession, setCurrentSession] = useState<CollaborationSession | null>(null);
   const [view3DMode, setView3DMode] = useState(false);
+  const [flyToArtifactId, setFlyToArtifactId] = useState<number | null>(null);
+  const [isARModeActive, setIsARModeActive] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loadPublicPortfolios = useCallback(async () => {
+    setIsLoading(true);
     try {
       const portfolios = await trpc.getPublicPortfolios.query();
       setPublicPortfolios(portfolios);
+      toast.success(`Loaded ${portfolios.length} public portfolios`);
     } catch (error) {
       console.error('Failed to load public portfolios:', error);
+      toast.error('Failed to load public portfolios');
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
   const loadPortfolioArtifacts = useCallback(async (portfolioId: number) => {
+    setIsLoading(true);
     try {
       const artifacts = await trpc.getPortfolioArtifacts.query({ portfolio_id: portfolioId });
       setPortfolioArtifacts(artifacts);
+      toast.success(`Loaded ${artifacts.length} artifacts`);
     } catch (error) {
       console.error('Failed to load portfolio artifacts:', error);
+      toast.error('Failed to load portfolio artifacts');
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
@@ -51,18 +66,31 @@ function App() {
   const handlePortfolioSelect = (portfolio: Portfolio) => {
     setSelectedPortfolio(portfolio);
     setView3DMode(true);
+    toast.success(`Entering 3D gallery: ${portfolio.title}`);
   };
 
   const handleArtifactSelect = (artifact: Artifact) => {
     setSelectedArtifact(artifact);
   };
 
+  const handleFlyToArtifact = (artifactId: number) => {
+    setFlyToArtifactId(artifactId);
+  };
+
+  const handleBackToGallery = () => {
+    setSelectedArtifact(null);
+    setFlyToArtifactId(null);
+    setIsARModeActive(false);
+  };
+
   const handleJoinSession = (session: CollaborationSession) => {
     setCurrentSession(session);
+    toast.success(`Joined collaboration session: ${session.title}`);
   };
 
   const handleUserLogin = (user: User) => {
     setCurrentUser(user);
+    toast.success(`Welcome back, ${user.display_name}!`);
   };
 
   if (!currentUser) {
@@ -91,11 +119,20 @@ function App() {
             </div>
           </div>
           <div className="flex items-center space-x-4">
+            {isLoading && (
+              <div className="flex items-center space-x-2 text-blue-300">
+                <div className="loading-spinner w-4 h-4 border-2 border-blue-300 border-t-transparent rounded-full"></div>
+                <span className="text-sm">Loading...</span>
+              </div>
+            )}
             {selectedPortfolio && (
               <Button
                 variant={view3DMode ? "default" : "outline"}
-                onClick={() => setView3DMode(!view3DMode)}
-                className="bg-purple-600 hover:bg-purple-700"
+                onClick={() => {
+                  setView3DMode(!view3DMode);
+                  toast.info(view3DMode ? "Switched to portfolio view" : "Switched to 3D gallery");
+                }}
+                className="bg-purple-600 hover:bg-purple-700 btn-smooth"
               >
                 {view3DMode ? "📋 Portfolio View" : "🌐 3D Gallery"}
               </Button>
@@ -161,6 +198,10 @@ function App() {
               onArtifactSelect={handleArtifactSelect}
               currentSession={currentSession}
               currentUser={currentUser}
+              isARModeActive={isARModeActive}
+              onFlyToArtifact={handleFlyToArtifact}
+              onBackToGallery={handleBackToGallery}
+              flyToArtifactId={flyToArtifactId}
             />
           ) : selectedPortfolio ? (
             <div className="p-6 overflow-y-auto">
@@ -225,9 +266,15 @@ function App() {
       {selectedArtifact && (
         <ArtifactDetailModal
           artifact={selectedArtifact}
-          onClose={() => setSelectedArtifact(null)}
+          onClose={() => {
+            setSelectedArtifact(null);
+            setIsARModeActive(false);
+          }}
+          onBackToGallery={view3DMode ? handleBackToGallery : undefined}
         />
       )}
+      
+      <Toaster position="top-right" />
     </div>
   );
 }
