@@ -121,7 +121,33 @@
 }
 
 .ar-mode-overlay {
+  background: linear-gradient(45deg, rgba(138, 43, 226, 0.2), rgba(75, 0, 130, 0.2));
+  backdrop-filter: blur(2px);
   animation: ar-pulse 2s ease-in-out infinite;
+}
+
+/* AR scanning line animation */
+@keyframes ar-scan-horizontal {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100vw); }
+}
+
+@keyframes ar-scan-vertical {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+.ar-scan-line {
+  animation: ar-scan-horizontal 3s ease-in-out infinite alternate;
+}
+
+.ar-scan-line:nth-child(2) {
+  animation: ar-scan-horizontal 3s ease-in-out infinite alternate-reverse;
+}
+
+.ar-scan-line:nth-child(3),
+.ar-scan-line:nth-child(4) {
+  animation: ar-scan-vertical 2.5s ease-in-out infinite alternate;
 }
 
 /* Gallery 3D enhancements */
@@ -142,6 +168,23 @@
 .asmr-active {
   background: linear-gradient(45deg, rgba(76, 205, 196, 0.1), rgba(185, 236, 188, 0.1));
   border-left: 3px solid #4ecdc4;
+  animation: asmr-glow 4s ease-in-out infinite;
+}
+
+@keyframes asmr-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(76, 205, 196, 0.3); }
+  50% { box-shadow: 0 0 20px rgba(76, 205, 196, 0.6); }
+}
+
+/* Artifact glow effects */
+.artifact-glow {
+  filter: drop-shadow(0 0 15px rgba(138, 43, 226, 0.8));
+  animation: artifact-pulse 2s ease-in-out infinite;
+}
+
+@keyframes artifact-pulse {
+  0%, 100% { filter: drop-shadow(0 0 10px rgba(138, 43, 226, 0.5)); }
+  50% { filter: drop-shadow(0 0 20px rgba(138, 43, 226, 1)); }
 }
 
 /* Smooth button transitions */

@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { trpc } from '@/utils/trpc';
+import { toast } from 'sonner';
 import type { 
   User, 
   Portfolio, 
@@ -74,8 +75,10 @@ export function CollaborationPanel({
         max_participants: 10
       });
       setShowCreateSession(false);
+      toast.success(`Created collaboration session: ${newSession.title}`);
     } catch (error) {
       console.error('Failed to create collaboration session:', error);
+      toast.error('Failed to create collaboration session');
     } finally {
       setIsLoading(false);
     }
@@ -92,8 +95,10 @@ export function CollaborationPanel({
       
       await trpc.joinSession.mutate(joinData);
       onJoinSession(session);
+      toast.success(`Joined session: ${session.title}`);
     } catch (error) {
       console.error('Failed to join session:', error);
+      toast.error('Failed to join session');
     } finally {
       setIsLoading(false);
     }

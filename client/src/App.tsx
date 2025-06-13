@@ -3,9 +3,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Toaster } from '@/components/ui/sonner';
+import { Toaster, toast } from 'sonner';
 import { trpc } from '@/utils/trpc';
-import { toast } from 'sonner';
 import { Gallery3D } from '@/components/Gallery3D';
 import { PortfolioManager } from '@/components/PortfolioManager';
 import { CollaborationPanel } from '@/components/CollaborationPanel';
@@ -70,7 +69,13 @@ function App() {
   };
 
   const handleArtifactSelect = (artifact: Artifact) => {
-    setSelectedArtifact(artifact);
+    // First trigger fly-to animation
+    handleFlyToArtifact(artifact.id);
+    
+    // Delay opening modal to allow camera animation to start
+    setTimeout(() => {
+      setSelectedArtifact(artifact);
+    }, 500);
   };
 
   const handleFlyToArtifact = (artifactId: number) => {
@@ -271,6 +276,8 @@ function App() {
             setIsARModeActive(false);
           }}
           onBackToGallery={view3DMode ? handleBackToGallery : undefined}
+          isARMode={isARModeActive}
+          setIsARMode={setIsARModeActive}
         />
       )}
       

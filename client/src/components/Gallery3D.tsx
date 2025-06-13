@@ -171,6 +171,7 @@ export function Gallery3D({
       isAnimating: true
     });
 
+    setSelectedArtifactId(artifact.id);
     setIsViewingArtifactDetail(true);
     if (onFlyToArtifact) {
       onFlyToArtifact(artifact.id);
@@ -603,21 +604,20 @@ export function Gallery3D({
           x <= artifact.clickArea.x + artifact.clickArea.width &&
           y >= artifact.clickArea.y && 
           y <= artifact.clickArea.y + artifact.clickArea.height) {
-        setSelectedArtifactId(artifact.id);
         
-        // Trigger fly-to animation
+        // Trigger fly-to animation first
         flyToArtifact(artifact);
         
-        // Delay opening modal to allow animation
-        setTimeout(() => {
-          onArtifactSelect(artifact);
-        }, 500);
+        // Pass selection to parent component
+        onArtifactSelect(artifact);
         return;
       }
     }
 
-    // Camera rotation
-    mouseState.current = { isDown: true, lastX: x, lastY: y };
+    // Camera rotation only if not animating
+    if (!targetCamera?.isAnimating) {
+      mouseState.current = { isDown: true, lastX: x, lastY: y };
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -639,7 +639,8 @@ export function Gallery3D({
       return;
     }
 
-    if (mouseState.current.isDown && !drawingMode) {
+    // Only allow mouse camera rotation if not in drawing mode and not animating
+    if (mouseState.current.isDown && !drawingMode && !targetCamera?.isAnimating) {
       const deltaX = x - mouseState.current.lastX;
       const deltaY = y - mouseState.current.lastY;
 

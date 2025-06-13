@@ -9,6 +9,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { trpc } from '@/utils/trpc';
+import { toast } from 'sonner';
 import type { 
   User, 
   Portfolio, 
@@ -60,8 +61,12 @@ export function PortfolioManager({ user, onPortfolioSelect }: PortfolioManagerPr
     try {
       const portfolios = await trpc.getUserPortfolios.query({ user_id: user.id });
       setUserPortfolios(portfolios);
+      if (portfolios.length > 0) {
+        toast.success(`Loaded ${portfolios.length} portfolios`);
+      }
     } catch (error) {
       console.error('Failed to load user portfolios:', error);
+      toast.error('Failed to load user portfolios');
     }
   }, [user.id]);
 
@@ -69,8 +74,10 @@ export function PortfolioManager({ user, onPortfolioSelect }: PortfolioManagerPr
     try {
       const artifacts = await trpc.getPortfolioArtifacts.query({ portfolio_id: portfolioId });
       setPortfolioArtifacts(artifacts);
+      toast.success(`Loaded ${artifacts.length} artifacts`);
     } catch (error) {
       console.error('Failed to load portfolio artifacts:', error);
+      toast.error('Failed to load portfolio artifacts');
     }
   }, []);
 
@@ -98,8 +105,10 @@ export function PortfolioManager({ user, onPortfolioSelect }: PortfolioManagerPr
         is_public: false
       });
       setShowCreatePortfolio(false);
+      toast.success(`Created portfolio: ${newPortfolio.title}`);
     } catch (error) {
       console.error('Failed to create portfolio:', error);
+      toast.error('Failed to create portfolio');
     } finally {
       setIsLoading(false);
     }
@@ -140,8 +149,10 @@ export function PortfolioManager({ user, onPortfolioSelect }: PortfolioManagerPr
         metadata: null
       });
       setShowCreateArtifact(false);
+      toast.success(`Added artifact: ${newArtifact.title}`);
     } catch (error) {
       console.error('Failed to create artifact:', error);
+      toast.error('Failed to create artifact');
     } finally {
       setIsLoading(false);
     }

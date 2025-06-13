@@ -11,10 +11,17 @@ interface ArtifactDetailModalProps {
   artifact: Artifact;
   onClose: () => void;
   onBackToGallery?: () => void;
+  isARMode?: boolean;
+  setIsARMode?: (value: boolean) => void;
 }
 
-export function ArtifactDetailModal({ artifact, onClose, onBackToGallery }: ArtifactDetailModalProps) {
-  const [isARMode, setIsARMode] = useState(false);
+export function ArtifactDetailModal({ 
+  artifact, 
+  onClose, 
+  onBackToGallery,
+  isARMode = false,
+  setIsARMode
+}: ArtifactDetailModalProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const getArtifactTypeInfo = (type: string) => {
@@ -37,10 +44,11 @@ export function ArtifactDetailModal({ artifact, onClose, onBackToGallery }: Arti
   const typeInfo = getArtifactTypeInfo(artifact.type);
 
   const handleARToggle = () => {
-    if (artifact.ar_enabled) {
-      setIsARMode(!isARMode);
+    if (artifact.ar_enabled && setIsARMode) {
+      const newARMode = !isARMode;
+      setIsARMode(newARMode);
       // In a real app, this would trigger AR functionality
-      if (!isARMode) {
+      if (newARMode) {
         console.log('Starting AR mode for artifact:', artifact.id);
         // Simulate AR initialization delay
         setTimeout(() => {
@@ -95,7 +103,7 @@ export function ArtifactDetailModal({ artifact, onClose, onBackToGallery }: Arti
               )}
               
               {isARMode && (
-                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/30 to-indigo-600/30 border-2 border-purple-400 animate-pulse flex items-center justify-center">
+                <div className="absolute inset-0 ar-mode-overlay border-2 border-purple-400 flex items-center justify-center">
                   <div className="text-white text-center relative">
                     <div className="absolute inset-0 bg-purple-600/10 rounded-lg animate-ping"></div>
                     <div className="relative z-10">
@@ -108,12 +116,21 @@ export function ArtifactDetailModal({ artifact, onClose, onBackToGallery }: Arti
                     </div>
                   </div>
                   
-                  {/* AR scanning lines */}
+                  {/* Enhanced AR scanning lines */}
                   <div className="absolute inset-0 overflow-hidden">
-                    <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-pulse"></div>
-                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent animate-pulse"></div>
-                    <div className="absolute top-0 left-0 w-0.5 h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent animate-pulse"></div>
-                    <div className="absolute top-0 right-0 w-0.5 h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent animate-pulse"></div>
+                    <div className="absolute top-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent ar-scan-line"></div>
+                    <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-transparent via-purple-400 to-transparent ar-scan-line"></div>
+                    <div className="absolute top-0 left-0 w-0.5 h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent ar-scan-line"></div>
+                    <div className="absolute top-0 right-0 w-0.5 h-full bg-gradient-to-b from-transparent via-purple-400 to-transparent ar-scan-line"></div>
+                    
+                    {/* Additional scanning effect */}
+                    <div 
+                      className="absolute w-full h-1 bg-gradient-to-r from-transparent via-purple-300 to-transparent opacity-60"
+                      style={{
+                        top: `${(Math.sin(Date.now() / 500) + 1) * 50}%`,
+                        transition: 'top 0.1s ease-in-out'
+                      }}
+                    ></div>
                   </div>
                 </div>
               )}
